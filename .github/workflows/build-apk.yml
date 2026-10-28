@@ -22,10 +22,11 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'temurin'
+        distribution: 'zulu'
 
     - name: Install Capacitor
       run: |
+        npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android
 
     - name: Buat Konfigurasi Capacitor
