@@ -29,12 +29,17 @@ jobs:
         npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android
 
+    - name: Siapkan Folder Web (www)
+      run: |
+        mkdir www
+        cp *.html *.js www/ || true
+
     - name: Buat Konfigurasi Capacitor
       run: |
         echo '{
           "appId": "com.nokia.snake",
           "appName": "Nokia Snake",
-          "webDir": "."
+          "webDir": "www"
         }' > capacitor.config.json
 
     - name: Tambah Platform Android
