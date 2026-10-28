@@ -24,11 +24,20 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Install Capacitor dan Buat Folder Android
+    - name: Install Capacitor
       run: |
-        npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android
-        npx cap init "Nokia Snake" "com.nokia.snake" --web-dir=.
+
+    - name: Buat Konfigurasi Capacitor
+      run: |
+        echo '{
+          "appId": "com.nokia.snake",
+          "appName": "Nokia Snake",
+          "webDir": "."
+        }' > capacitor.config.json
+
+    - name: Tambah Platform Android
+      run: |
         npx cap add android
         npx cap sync
 
