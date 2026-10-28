@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Snake 2P - Mode Selection</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1c16; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: "Courier New", monospace; height: 100vh; user-select: none; overflow: hidden; color: #8bac0f; }
+  
+  .game-area { position: relative; width: 100%; max-width: 400px; aspect-ratio: 1/1; border: 8px solid #0e0f0c; border-radius: 8px; background: #8bac0f; box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.6); }
+  canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+  
+  .hud { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; padding: 10px 10px 15px 10px; margin-bottom: 15px; font-weight: bold; font-size: 1.2rem; border-bottom: 4px dashed #306230; }
+  .p1-score { color: #0f380f; }
+  .p2-score { color: #004d40; }
+  .timer { color: #2a2a2a; font-size: 1rem; background: #8bac0f; padding: 4px 10px; border-radius: 4px; display: none; font-weight: bold; }
+
+  .controls { display: flex; justify-content: space-between; width: 100%; max-width: 420px; margin-top: 10px; padding: 0 10px; }
+  .dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 150px; }
+  .dpad button { background: #2c3027; border: 3px solid #0e0f0c; color: #8bac0f; font-size: 1.6rem; padding: 20px 0; border-radius: 12px; font-weight: bold; box-shadow: 0 5px 0 #0e0f0c; transition: all 0.05s; }
+  .dpad button:active { background: #4a4f42; transform: translateY(4px); box-shadow: 0 1px 0 #0e0f0c; }
+  .dpad .empty { visibility: hidden; }
+
+  .overlay { position: absolute; inset: 0; background: rgba(26,28,22,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; padding: 15px; border-radius: 4px; }
+  .overlay h1 { color: #8bac0f; font-size: 1.5rem; margin-bottom: 5px; letter-spacing: 2px; }
+  .overlay p { font-size: 0.75rem; color: #9bbc0f; margin-bottom: 10px; line-height: 1.4; }
+  
+  /* Tambahan CSS untuk Dropdown Waktu */
+  .time-settings { margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+  .time-settings label { font-size: 0.8rem; font-weight: bold; color: #9bbc0f; }
+  .time-settings select { 
+    background: #0f380f; color: #8bac0f; border: 2px solid #0e0f0c; padding: 6px 10px; 
+    font-family: inherit; font-weight: bold; border-radius: 4px; outline: none; font-size: 0.8rem; 
+  }
+
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 300px; margin-bottom: 15px; }
+  .mode-btn { background: #0f380f; border: 2px solid #0e0f0c; color: #9bbc0f; padding: 10px 5px; font-family: inherit; font-weight: bold; font-size: 0.75rem; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.1s; box-shadow: 0 3px 0 #0e0f0c; }
+  .mode-btn:active { transform: translateY(3px); box-shadow: 0 0 0 #0e0f0c; }
+  .mode-btn b { display: block; font-size: 0.85rem; margin-bottom: 3px; }
+  .mode-btn small { display: block; font-size: 0.6rem; font-weight: normal; opacity: 0.8; }
+
+  .btn { background: #8bac0f; color: #0f380f; border: 2px solid #0e0f0c; padding: 12px 20px; font-family: inherit; font-weight: bold; font-size: 1rem; cursor: pointer; border-radius: 6px; width: 200px; box-shadow: 0 4px 0 #0e0f0c; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #0e0f0c; }
+</style>
+</head>
+<body>
+
+  <div class="hud">
+    <div class="p1-score">P1: <span id="s1">0</span></div>
+    <div class="timer" id="timer-display">T: 0s</div>
+    <div style="color:#9ca38f; font-size: 0.8rem;" id="mode-title">2 PEMAIN</div>
+    <div class="p2-score">P2: <span id="s2">0</span></div>
+  </div>
+
+  <div class="game-area">
+    <canvas id="game"></canvas>
+    
+    <div class="overlay" id="menu-main">
+      <h1>SNAKE RETRO (2P)</h1>
+      <p>Pemain 1 (Kiri): <b>W A S D</b><br>Pemain 2 (Kanan): <b>Panah</b></p>
+      
+      <!-- Dropdown Waktu -->
+      <div class="time-settings">
+        <label for="time-select">WAKTU:</label>
+        <select id="time-select">
+          <option value="120">120 Detik (2 Menit)</option>
+          <option value="300">5 Menit</option>
+          <option value="600" selected>10 Menit</option>
+          <option value="900">15 Menit</option>
+          <option value="3600">1 Jam</option>
+        </select>
+      </div>
+
+      <div class="mode-grid" id="mode-list"></div>
+      <button class="btn" style="background:transparent; border:2px solid #8bac0f; color:#8bac0f; box-shadow:none;" onclick="window.location.href='index.html'">KEMBALI</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="dpad">
+      <button class="empty"></button>
+      <button onmousedown="dir1(0,-1)" ontouchstart="dir1(0,-1)">▲</button>
+      <button class="empty"></button>
+      <button onmousedown="dir1(-1,0)" ontouchstart="dir1(-1,0)">◀</button>
+      <button onmousedown="dir1(0,1)" ontouchstart="dir1(0,1)">▼</button>
+      <button onmousedown="dir1(1,0)" ontouchstart="dir1(1,0)">▶</button>
+    </div>
+    <div class="dpad">
+      <button class="empty"></button>
+      <button onmousedown="dir2(0,-1)" ontouchstart="dir2(0,-1)">▲</button>
+      <button class="empty"></button>
+      <button onmousedown="dir2(-1,0)" ontouchstart="dir2(-1,0)">◀</button>
+      <button onmousedown="dir2(0,1)" ontouchstart="dir2(0,1)">▼</button>
+      <button onmousedown="dir2(1,0)" ontouchstart="dir2(1,0)">▶</button>
+    </div>
+  </div>
+
+  <script src="local2p.js"></script>
+</body>
+</html>

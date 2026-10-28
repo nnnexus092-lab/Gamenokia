@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Profil Pemain</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Courier New", monospace; background: #2a2a2a; color: #d4dac4; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .phone { background: linear-gradient(180deg, #3a3f36, #1f221c); padding: 30px 20px; border-radius: 40px 40px 60px 60px; box-shadow: 0 20px 50px rgba(0,0,0,.7), inset 0 2px 4px rgba(255,255,255,.15), inset 0 -4px 12px rgba(0,0,0,.6); border: 2px solid #0e0f0c; max-width: 380px; width: 100%; text-align: center; }
+  h2 { color: #9ca38f; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; font-size: 1.2rem; }
+  label { display: block; text-align: left; margin: 10px 0 5px 10px; color: #9bbc0f; font-weight: bold; font-size: .9rem; }
+  input[type=text] { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #0e0f0c; background: #1a1c16; color: #8bac0f; font-family: "Courier New", monospace; font-size: 1rem; font-weight: bold; outline: none; margin-bottom: 15px; text-align: center; }
+  
+  /* CSS Diubah ke Grid 4 Kolom */
+  .avatar-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; padding: 0 5px; }
+  .avatar-option { font-size: 1.4rem; background: #1a1c16; padding: 10px 0; border-radius: 8px; border: 2px solid #0e0f0c; cursor: pointer; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; transition: all 0.1s; }
+  .avatar-option:active { transform: scale(0.9); }
+  .avatar-option.selected { border-color: #8bac0f; background: #306230; transform: scale(1.05); box-shadow: 0 0 10px rgba(139, 172, 15, 0.5); }
+  
+  .btn { display: block; width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 2px solid #0e0f0c; background: #0f380f; color: #9bbc0f; font-family: "Courier New", monospace; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 0 #0e0f0c; transition: all .05s; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #0e0f0c; }
+  .btn.alt { background: transparent; color: #9ca38f; box-shadow: 0 4px 0 #0e0f0c; }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <h2>Profil Pemain</h2>
+    
+    <label>Nama Panggilan:</label>
+    <input type="text" id="player-name" placeholder="Masukkan Nama..." maxlength="10">
+
+    <label>Pilih Avatar (Emoji):</label>
+    <div class="avatar-selector" id="avatar-list">
+      <!-- 12 Pilihan Emoji -->
+      <div class="avatar-option" data-avatar="🐍">🐍</div>
+      <div class="avatar-option" data-avatar="🍎">🍎</div>
+      <div class="avatar-option" data-avatar="🕹️">🕹️</div>
+      <div class="avatar-option" data-avatar="👾">👾</div>
+      <div class="avatar-option" data-avatar="🏆">🏆</div>
+      <div class="avatar-option" data-avatar="👑">👑</div>
+      <div class="avatar-option" data-avatar="🎮">🎮</div>
+      <div class="avatar-option" data-avatar="💾">💾</div>
+      <div class="avatar-option" data-avatar="📟">📟</div>
+      <div class="avatar-option" data-avatar="🐢">🐢</div>
+      <div class="avatar-option" data-avatar="🦊">🦊</div>
+      <div class="avatar-option" data-avatar="🤖">🤖</div>
+    </div>
+
+    <button class="btn" id="save-btn">SIMPAN PROFIL</button>
+    <button class="btn alt" onclick="window.location.href='index.html'">KEMBALI KE GAME</button>
+  </div>
+
+<script>
+  let selectedAvatar = '🐍';
+
+  // Load data yang tersimpan
+  const savedProfile = JSON.parse(localStorage.getItem('nokiaSnakeProfile')) || { name: 'PLAYER 1', avatar: '🐍' };
+  document.getElementById('player-name').value = savedProfile.name;
+  selectedAvatar = savedProfile.avatar;
+
+  // Tandai avatar yang dipilih
+  function updateAvatarUI() {
+    document.querySelectorAll('.avatar-option').forEach(el => {
+      if (el.dataset.avatar === selectedAvatar) el.classList.add('selected');
+      else el.classList.remove('selected');
+    });
+  }
+  updateAvatarUI();
+
+  // Pilih avatar
+  document.querySelectorAll('.avatar-option').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedAvatar = el.dataset.avatar;
+      updateAvatarUI();
+    });
+  });
+
+  // Simpan profil
+  document.getElementById('save-btn').addEventListener('click', () => {
+    let name = document.getElementById('player-name').value.trim();
+    if (!name) name = 'PLAYER 1';
+    
+    const profile = { name: name.toUpperCase(), avatar: selectedAvatar };
+    localStorage.setItem('nokiaSnakeProfile', JSON.stringify(profile));
+    
+    alert('Profil berhasil disimpan!');
+    window.location.href = 'index.html'; // Kembali ke game
+  });
+</script>
+</body>
+</html>

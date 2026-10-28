@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pilih Skin Ular</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Courier New", monospace; background: #1a1c16; color: #d4dac4; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .phone { background: linear-gradient(180deg, #3a3f36, #1f221c); padding: 20px; border-radius: 40px 40px 60px 60px; box-shadow: 0 20px 50px rgba(0,0,0,.7), inset 0 2px 4px rgba(255,255,255,.15); border: 2px solid #0e0f0c; max-width: 380px; width: 100%; text-align: center; }
+  h2 { color: #9ca38f; letter-spacing: 2px; margin-bottom: 15px; text-transform: uppercase; font-size: 1.1rem; }
+  h3 { color: #9bbc0f; margin-bottom: 8px; font-size: 0.85rem; text-align: left; padding-left: 5px; }
+  
+  /* Grid diubah agar menampung banyak warna (6 kolom) */
+  .skin-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 20px; }
+  .skin-option { width: 100%; aspect-ratio: 1/1; border-radius: 6px; border: 2px solid transparent; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: transform 0.1s; }
+  .skin-option:active { transform: scale(0.9); }
+  .skin-option.selected { border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+  
+  .btn { display: block; width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 2px solid #0e0f0c; background: #0f380f; color: #9bbc0f; font-family: inherit; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 0 #0e0f0c; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #0e0f0c; }
+  .btn.alt { background: transparent; color: #9ca38f; }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <h2>Pilih Warna Ular</h2>
+    
+    <h3>Warna Pemain 1 (Kiri):</h3>
+    <div class="skin-grid" id="grid-p1"></div>
+
+    <h3>Warna Pemain 2 (Kanan):</h3>
+    <div class="skin-grid" id="grid-p2"></div>
+
+    <button class="btn" id="save-btn">SIMPAN SKIN</button>
+    <button class="btn alt" onclick="window.location.href='index.html'">KEMBALI</button>
+  </div>
+
+<script>
+  // 12 PILIHAN WARNA (P1 = Warna Gelap, P2 = Warna Terang)
+  const SKINS = [
+    { p1: '#0f380f', p2: '#004d40' }, // Nokia Classic
+    { p1: '#b71c1c', p2: '#d32f2f' }, // Merah
+    { p1: '#0d47a1', p2: '#1976d2' }, // Biru
+    { p1: '#4a148c', p2: '#7b1fa2' }, // Ungu
+    { p1: '#ff8f00', p2: '#fbc02d' }, // Emas
+    { p1: '#424242', p2: '#757575' }, // Abu
+    { p1: '#880e4f', p2: '#e91e63' }, // Pink
+    { p1: '#006064', p2: '#00bcd4' }, // Cyan
+    { p1: '#e65100', p2: '#ff9800' }, // Oranye
+    { p1: '#33691e', p2: '#8bc34a' }, // Hijau Lime
+    { p1: '#3e2723', p2: '#795548' }, // Coklat
+    { p1: '#263238', p2: '#cfd8dc' }  // Putih / Perak
+  ];
+
+  let selectedP1 = 0;
+  let selectedP2 = 0;
+
+  // Load data sebelumnya
+  const saved = JSON.parse(localStorage.getItem('snakeSkinIndex')) || { p1: 0, p2: 0 };
+  selectedP1 = saved.p1;
+  selectedP2 = saved.p2;
+
+  const gridP1 = document.getElementById('grid-p1');
+  const gridP2 = document.getElementById('grid-p2');
+
+  function renderSkins() {
+    gridP1.innerHTML = ''; gridP2.innerHTML = '';
+    SKINS.forEach((skin, index) => {
+      const el1 = document.createElement('div');
+      el1.className = `skin-option ${index === selectedP1 ? 'selected' : ''}`;
+      el1.style.backgroundColor = skin.p1;
+      el1.onclick = () => { selectedP1 = index; renderSkins(); };
+      gridP1.appendChild(el1);
+
+      const el2 = document.createElement('div');
+      el2.className = `skin-option ${index === selectedP2 ? 'selected' : ''}`;
+      el2.style.backgroundColor = skin.p2;
+      el2.onclick = () => { selectedP2 = index; renderSkins(); };
+      gridP2.appendChild(el2);
+    });
+  }
+
+  renderSkins();
+
+  document.getElementById('save-btn').onclick = () => {
+    localStorage.setItem('snakeSkinIndex', JSON.stringify({ p1: selectedP1, p2: selectedP2 }));
+    alert("Skin berhasil disimpan!");
+    window.location.href = 'index.html';
+  };
+</script>
+</body>
+</html>
